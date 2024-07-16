@@ -1,0 +1,38 @@
+services:
+
+  db:
+    image: postgres:16.3-bookworm
+    container_name: db
+    hostname: db
+    env_file: .env
+    environment:
+      POSTGRES_USER: $PG__POSTGRES_USER
+      POSTGRES_PASSWORD: $PG__POSTGRES_PASSWORD
+      POSTGRES_DB: $PG__POSTGRES_DB
+    ports:
+    - $PG__POSTGRES_PORT:$PG__POSTGRES_PORT
+    volumes:
+    - db-data:/var/lib/postgresql/data
+    networks:
+    - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: ./.devcontainer/Dockerfile
+    container_name: app
+    hostname: app
+    env_file: .env
+    working_dir: /app
+    user: vscode
+    tty: true
+    volumes:
+    - .:/app
+    networks:
+    - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
